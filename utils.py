@@ -3,7 +3,7 @@ import utils
 import redis
 from consts import *
 
-__all__ = ['gen_valid_id']
+__all__ = ['gen_valid_id', 'gen_list_page', 'parse', 'Database']
 
 
 def gen_valid_id(db, type):
@@ -46,7 +46,9 @@ def parse(key):
 
 
 class Database(redis.StrictRedis):
-    def set(self, type, name, id=utils.gen_valid_id(), value=''):
+    def set(self, type, name, id=None, value=''):
+        if not id:
+            id = utils.gen_valid_id(self, type)
         return super().set('{0}_{1}_{2}_'.format(type, name, id), value)
 
     def keys(self, type, name='*', id='*'):
