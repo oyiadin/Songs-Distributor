@@ -125,8 +125,6 @@ def subscribeHandler():
     return STR_SUBSCRIBE + '\n' + STR_HELP
 
 
-
-
 try:
     robot.run()
 except KeyboardInterrupt as e:
