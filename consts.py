@@ -71,6 +71,6 @@ NO_SONG = '不好意思，我们没有找到这首歌，再检查一遍你输入
 
 TOO_MANY_SONGS = 'emm，请找出你想播放的歌曲所对应的ID，并输入 play 歌曲ID'
 
-SONG_DESCRIPTION = '由 @二种旋律 所整理的二中宿区曲子'
+SONG_DESCRIPTION = '由 @二种旋律 所整理的二中宿区曲子\n歌曲ID: {0}'
 
 SONG_SUADDED_DESCRIPTION = 'ID {0} 添加成功，请试听确认无误。'

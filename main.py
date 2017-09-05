@@ -61,13 +61,12 @@ def text_handler(message):
         db.delete(selected[0])
         db.set(CHECKED, name=title, id=id)
 
-        _format_args = (RESOURCE_URL, id)
         return werobot.replies.MusicReply(
             message=message,
-            title=parse,
+            title=title,
             description=SONG_SUADDED_DESCRIPTION.format(id),
-            url='{0}/{1}.mp3'.format(*_format_args),
-            hq_url='{0}/{1}_hq.mp3'.format(*_format_args))
+            url='{0}/{1}.mp3'.format(RESOURCE_URL, id),
+            hq_url='{0}/{1}_hq.mp3'.format(RESOURCE_URL, id))
 
     elif command == 'list':
         if len(args) > 1:
@@ -104,11 +103,13 @@ def text_handler(message):
             return TOO_MANY_SONGS + '\n' + '\n'.join([
                 '{name} {id}'.format(**parse(i)) for i in selected])
 
+        title, id = parse(selected[0])['name'], parse(selected[0])['id']
         return werobot.replies.MusicReply(
             message=message,
-            title=parse(selected[0])['name'],
-            description=SONG_DESCRIPTION,
-            url=db.get(selected[0]))
+            title=title,
+            description=SONG_DESCRIPTION.format(id),
+            url='{0}/{1}.mp3'.format(RESOURCE_URL, id),
+            hq_url='{0}/{1}_hq.mp3'.format(RESOURCE_URL, id))
 
 if __name__ == '__main__':
     robot.run()
