@@ -87,10 +87,10 @@ def textHandler(message):
         right = left+11
         db_type = CHECKED if command[0] == 'list' else PENDING
         keys = db.keys(db_type + '_*')
-        if len(keys) < (int(command[1]*10-9)):
+        if len(keys) < (int(command[1])*10-9):
             return STR_PAGE_NOT_EXIST
         keys = keys[left:right]
-        return '\n'.join(keys)
+        return '\n'.join(_.decode('utf-8') for _ in keys)
 
     elif command[0] == 'play':
         if len(command) >= 2:
