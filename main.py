@@ -1,13 +1,13 @@
 import werobot
 import redis
-import utils
+from utils import *
 from consts import *
 
 
 robot = werobot.WeRoBot(token=TOKEN)
 robot.config.update(HOST=HOST, PORT=PORT, SESSION_STORAGE=False)
 
-db = utils.Database()
+db = Database()
 
 
 @robot.subscribe
@@ -74,18 +74,18 @@ def text_handler(message):
             return TOO_MANY_ARGS
         
         page = args[0] if args else 1
-        return utils.gen_list_page(db, CHECKED, page=page)
+        return gen_list_page(db, CHECKED, page=page)
 
     elif command == 'sulist':
-        if len(args) < 2:
+        if len(args) < 1:
             return NEED_MORE_ARGS
         elif len(args) > 2:
             return TOO_MANY_ARGS
         if args[0] != PASSWORD:
             return PASSWORD_INCORRECT
 
-        page = args[0] if len(args) == 2 else 1
-        return utils.gen_list_page(db, PENDING, page=page)
+        page = args[1] if len(args) == 2 else 1
+        return gen_list_page(db, PENDING, page=page)
         
     elif command == 'play':
         if len(args) < 1:
@@ -102,11 +102,11 @@ def text_handler(message):
             return NO_SONG
         elif len(selected) > 1:
             return TOO_MANY_SONGS + '\n' + '\n'.join([
-                '{name} {id}'.format(**utils.parse(i)) for i in selected])
+                '{name} {id}'.format(**parse(i)) for i in selected])
 
         return werobot.replies.MusicReply(
             message=message,
-            title=utils.parse(selected[0])['name'],
+            title=parse(selected[0])['name'],
             description=SONG_DESCRIPTION,
             url=db.get(selected[0]))
 
