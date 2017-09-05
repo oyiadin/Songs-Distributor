@@ -1,137 +1,114 @@
 import werobot
 import redis
-import random
+import utils
+from consts import *
 
 
-STR_SUBSCRIBE = '''你好，感谢你的关注！这是一个私人管理的公众号，旨在分享饶平县第二中学宿区的歌单。同时，我们随时欢迎大家为这个歌单添砖加瓦。
-另外，我们几个维护者都是准大学生/准大二生，这段时间就会陆陆续续地离开家，开始忙碌起来。由于这个缘故，我们无法保证一直及时更新，只能不定期进行维护，敬请谅解哦~'''
+robot = werobot.WeRoBot(token=TOKEN)
+robot.config.update(HOST=HOST, PORT=PORT, SESSION_STORAGE=False)
 
-STR_HELP = '''help: to get this help page
-add [song-name]: to tell us something new
-list [page-num]: to show you a list containing all the songs we have
-play [song-name]: to play the specific song for you
-about: about us
-------------
-set [song-id] [link] [password]: to set the right version of a song
-list-pending [page] [password]: to show you a list of songs to be checked.'''
-
-STR_ADDED = 'Thanks for your updating! We have already added it to our pending-list.'
-
-STR_NEED_ARGS = 'Need more arguments! Type `help` for more information.'
-
-STR_WRONG_PASSWORD = 'The command you required is the one needs password, and your password is incorrect.'
-
-STR_ABOUT = '''We are a small group of people who wants to in memory of our 3 years in Raoping No.2 Middle School.
-This robot was made by @oyiadin, based on WeRoBot and redis. Source-code lies here:
-https://github.com/oyiadin/Songs-Distributor'''
-
-STR_PAGE_NOT_EXIST = "I'm sorry but this page doesn't exist. Try a smaller number please."
-
-PENDING = 'songPending'
-CHECKED = 'songChecked'
-
-
-token = input('token: ') or 'token_oyoy'
-host = input('host: ') or '0.0.0.0'
-password = input('password: ') or 'oyoy'
-
-robot = werobot.WeRoBot(token=token)
-robot.config.update(HOST=host, PORT=80, SESSION_STORAGE=False)
-
-db = redis.StrictRedis()
-
-
-def gen_id():
-    id = ''
-    for i in range(5):
-        id += random.choice('0123456789')
-    return id
-
-
-def dbSet(type, name, value=''):
-    id = gen_id()
-    while db.keys(type + '_' + '*' + '_' + id):
-        id = gen_id()
-
-    key = type + '_' + name + '_' + id
-
-    db.set(key, value)
-    return id
-
-
-@robot.text
-def textHandler(message):
-    command = message.content.split()
-    if command[0] == 'help':
-        return STR_HELP
-
-    elif command[0] == 'add':
-        if len(command) >= 2:
-            dbSet(PENDING, ' '.join(command[1:]))
-            return STR_ADDED
-        else:
-            return STR_NEED_ARGS
-
-    elif command[0] == 'about':
-        if len(command) == 1:
-            return STR_ABOUT
-        else:
-            return STR_NEED_ARGS
-
-    elif command[0] in ('list', 'list-pending'):
-        if command[0] == 'list-pending':
-            if len(command) != 3:   return STR_NEED_ARGS
-            elif command[2] != password:    return STR_WRONG_PASSWORD
-
-        if len(command) == 1: command.append('1')
-        left = (int(command[1])-1) * 10
-        right = left+11
-        db_type = CHECKED if command[0] == 'list' else PENDING
-        keys = db.keys(db_type + '_*')
-        if len(keys) < (int(command[1])*10-9):
-            return STR_PAGE_NOT_EXIST
-        keys = keys[left:right]
-        return '\n'.join(_.decode('utf-8') for _ in keys)
-
-    elif command[0] == 'play':
-        if len(command) >= 2:
-            songs = db.keys(CHECKED + '_*' + command[1] + '*')
-            if len(songs) == 1:
-                return werobot.replies.MusicReply(
-                    message=message,
-                    title=songs[0].decode('utf-8').split('_')[1],
-                    description='A song from @rpezmusic',
-                    url=db.get(songs[0]))
-            elif not songs:
-                return "I'm sorry but there isn't any song named so."
-            else:
-                content = "I'm sorry but there is too many songs matched:\n"
-                content += '\n'.join([i.decode('utf-8') for i in songs])
-                return content
-        else:
-            return STR_NEED_ARGS
-
-    elif command[0] == 'set':
-        if len(command) != 4:   return STR_NEED_ARGS
-        elif command[3] != password:    return STR_WRONG_PASSWORD
-
-        _, name, id = db.keys(PENDING + '_*_' + command[1])[0].decode('utf-8').split('_')
-        db.delete('_'.join([_, name, id]))
-        db.set('_'.join([CHECKED, name, id]), command[2])
-
-        return werobot.replies.MusicReply(
-            message=message, title=name, description=id, url=command[2])
+db = utils.Database()
 
 
 @robot.subscribe
-def subscribeHandler():
-    return STR_SUBSCRIBE + '\n\n' + STR_HELP
+def subscribe_handler():
+    return SUBSCRIBE + '\n\n' + SHORT_HELP
 
 
-try:
+@robot.text
+def text_handler(message):
+    content_list = message.content.split()
+    command = content_list[0]
+    args = content_list[1:] if len(content_list) >= 2 else []
+
+    if command == 'help' or command == '帮助':
+        if args:
+            return TOO_MANY_ARGS
+        return HELP
+
+    elif command == 'about':
+        if args:
+            return TOO_MANY_ARGS
+        return ABOUT
+
+    elif command == 'add':
+        if len(args) < 1:
+            return NEED_MORE_ARGS
+        elif len(args) > 1:
+            return TOO_MANY_ARGS
+        for i in args:
+            if '_' in i:
+                return INVALID_SYMBOL.format('_')
+
+        db.set(PENDING, ' '.join(args))
+        return ADDED
+
+    elif command == 'suadd':
+        if len(args) < 2:
+            return NEED_MORE_ARGS
+        elif len(args) > 2:
+            return TOO_MANY_ARGS
+        if args[0] != PASSWORD:
+            return PASSWORD_INCORRECT
+        if len(args[1]) != 4:
+            return ID_INCORRECT
+
+        selected = db.keys(PENDING, id=args[1])
+        if not selected:
+            return ID_INCORRECT
+        title, id = parse(selected[0])['name'], parse(selected[0])['id']
+
+        db.delete(selected[0])
+        db.set(CHECKED, name=title, id=id)
+
+        _format_args = (RESOURCE_URL, id)
+        return werobot.replies.MusicReply(
+            message=message,
+            title=parse,
+            description=SONG_SUADDED_DESCRIPTION.format(id),
+            url='{0}/{1}.mp3'.format(*_format_args),
+            hq_url='{0}/{1}_hq.mp3'.format(*_format_args))
+
+    elif command == 'list':
+        if len(args) > 1:
+            return TOO_MANY_ARGS
+        
+        page = args[0] if args else 1
+        return utils.gen_list_page(db, CHECKED, page=page)
+
+    elif command == 'sulist':
+        if len(args) < 2:
+            return NEED_MORE_ARGS
+        elif len(args) > 2:
+            return TOO_MANY_ARGS
+        if args[0] != PASSWORD:
+            return PASSWORD_INCORRECT
+
+        page = args[0] if len(args) == 2 else 1
+        return utils.gen_list_page(db, PENDING, page=page)
+        
+    elif command == 'play':
+        if len(args) < 1:
+            return NEED_MORE_ARGS
+        elif len(args) > 1:
+            return TOO_MANY_ARGS
+
+        if args[0].isdigit():
+            selected = db.keys(CHECKED, id=args[0])
+        else:
+            selected = db.keys(CHECKED, name=args[0])
+
+        if not selected:
+            return NO_SONG
+        elif len(selected) > 1:
+            return TOO_MANY_SONGS + '\n' + '\n'.join([
+                '{name} {id}'.format(**utils.parse(i)) for i in selected])
+
+        return werobot.replies.MusicReply(
+            message=message,
+            title=utils.parse(selected[0])['name'],
+            description=SONG_DESCRIPTION,
+            url=db.get(selected[0]))
+
+if __name__ == '__main__':
     robot.run()
-except KeyboardInterrupt as e:
-    print('Closing datebase..')
-    PENDING.close()
-    CHECKED.close()
-    raise e
