@@ -32,11 +32,11 @@ CHECKED = 'songChecked'
 
 
 token = input('token: ') or 'token_oyoy'
-host = input('host: ') or '127.0.0.1'
+host = input('host: ') or '0.0.0.0'
 password = input('password: ') or 'oyoy'
 
 robot = werobot.WeRoBot(token=token)
-robot.config.update(HOST=host, PORT=80)
+robot.config.update(HOST=host, PORT=80, SESSION_STORAGE=False)
 
 db = redis.StrictRedis()
 
@@ -46,6 +46,7 @@ def gen_id():
     for i in range(5):
         id += random.choice('0123456789')
     return id
+
 
 def dbSet(type, name, value=''):
     id = gen_id()
@@ -94,16 +95,18 @@ def textHandler(message):
 
     elif command[0] == 'play':
         if len(command) >= 2:
-            songs = db.keys(CHECKED + '_*' + command[1] + '*_*')
+            songs = db.keys(CHECKED + '_*' + command[1] + '*')
             if len(songs) == 1:
                 return werobot.replies.MusicReply(
                     message=message,
-                    title=songs[0].split('_')[1],
+                    title=songs[0].decode('utf-8').split('_')[1],
                     description='A song from @rpezmusic',
                     url=db.get(songs[0]))
+            elif not songs:
+                return "I'm sorry but there isn't any song named so."
             else:
                 content = "I'm sorry but there is too many songs matched:\n"
-                content += '\n'.join([i for i in songs])
+                content += '\n'.join([i.decode('utf-8') for i in songs])
                 return content
         else:
             return STR_NEED_ARGS
@@ -112,9 +115,9 @@ def textHandler(message):
         if len(command) != 4:   return STR_NEED_ARGS
         elif command[3] != password:    return STR_WRONG_PASSWORD
 
-        _, name, id = db.keys(PENDING + '_*_' + command[1])[0].split('_')
+        _, name, id = db.keys(PENDING + '_*_' + command[1])[0].decode('utf-8').split('_')
         db.delete('_'.join([_, name, id]))
-        db.set('_'.join(CHECKED, name, id), command[2])
+        db.set('_'.join([CHECKED, name, id]), command[2])
 
         return werobot.replies.MusicReply(
             message=message, title=name, description=id, url=command[2])
@@ -122,7 +125,7 @@ def textHandler(message):
 
 @robot.subscribe
 def subscribeHandler():
-    return STR_SUBSCRIBE + '\n' + STR_HELP
+    return STR_SUBSCRIBE + '\n\n' + STR_HELP
 
 
 try:
