@@ -1,24 +1,3 @@
-
-
-########################################
-#         Section of Constants         #
-########################################
-
-
-PENDING = 'pending'
-CHECKED = 'checked'
-TOKEN = 'token_here'
-HOST = '0.0.0.0'
-PORT = 80
-PASSWORD = 'pw_no_blank'
-RESOURCE_URL = 'http://example.com/songs'  # Mustn't end with '/'
-
-
-########################################
-#          Section of Messages         #
-########################################
-
-
 SUBSCRIBE = '''\
 你好，感谢你的关注！这是一个私人管理的公众号，旨在分享饶平县第二中学宿区的歌单。同时，\
 我们随时欢迎大家为这个歌单添砖加瓦。\n\n另外，由于我们几个维护者都是二中毕业生，这段时\
@@ -40,6 +19,7 @@ play 不要说话
 这样就可以播放《不要说话》了。
 =====================
 suadd [密码] [歌曲ID]: 将待定歌曲添加到正式歌单
+sudel [密码] [歌曲ID]: 将某歌曲从待定列表里移除
 sulist [密码] [页数]: 查看待定歌曲列表
 =====================
 su 开头的命令正式发布时会隐藏，只有我们知道。'''
@@ -57,6 +37,8 @@ https://github.com/oyiadin/Songs-Distributor'''
 ADDED = '''\
 感谢你的反馈 :)
 我们找到资源后就会添加至歌单中~'''
+
+DELETED = '歌曲《{0}》({1})已从待定列表删除。'
 
 NEED_MORE_ARGS = '参数不够。' + SHORT_HELP
 
@@ -78,6 +60,6 @@ NO_SONG = '不好意思，我们没有找到这首歌，再检查一遍你输入
 
 TOO_MANY_SONGS = 'emm，请找出你想播放的歌曲所对应的ID，并输入 play 歌曲ID'
 
-SONG_DESCRIPTION = '由 @二种旋律 所整理的二中宿区曲子\n歌曲ID: {0}'
+SONG_DESCRIPTION = '由 @二中旋律 所整理的二中宿区曲子\n歌曲ID: {0}'
 
 SONG_SUADDED_DESCRIPTION = 'ID {0} 添加成功，请试听确认无误。'

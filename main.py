@@ -2,6 +2,7 @@ import werobot
 import redis
 from utils import *
 from consts import *
+from config import *
 
 
 robot = werobot.WeRoBot(token=TOKEN)
@@ -43,7 +44,7 @@ def text_handler(message):
         db.set(PENDING, ' '.join(args))
         return ADDED
 
-    elif command == 'suadd':
+    elif command == 'suadd' or command == 'sudel':
         if len(args) < 2:
             return NEED_MORE_ARGS
         elif len(args) > 2:
@@ -59,14 +60,18 @@ def text_handler(message):
         title, id = parse(selected[0])['name'], parse(selected[0])['id']
 
         db.delete(selected[0])
-        db.set(CHECKED, name=title, id=id)
 
-        return werobot.replies.MusicReply(
-            message=message,
-            title=title,
-            description=SONG_SUADDED_DESCRIPTION.format(id),
-            url='{0}/{1}.mp3'.format(RESOURCE_URL, id),
-            hq_url='{0}/{1}_hq.mp3'.format(RESOURCE_URL, id))
+        if command == 'sudel':
+            return DELETED.format(title, id)
+        elif command == 'suadd':
+            db.set(CHECKED, name=title, id=id)
+
+            return werobot.replies.MusicReply(
+                message=message,
+                title=title,
+                description=SONG_SUADDED_DESCRIPTION.format(id),
+                url='{0}/{1}.mp3'.format(RESOURCE_URL, id),
+                hq_url='{0}/{1}_hq.mp3'.format(RESOURCE_URL, id))
 
     elif command == 'list':
         if len(args) > 1:
