@@ -1,5 +1,3 @@
-PENDING = 'pending'
-CHECKED = 'checked'
 TOKEN = 'token_here'
 HOST = '0.0.0.0'
 PORT = 80

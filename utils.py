@@ -6,7 +6,7 @@ from consts import *
 __all__ = ['gen_valid_id', 'gen_list_page', 'parse', 'Database']
 
 
-def gen_valid_id(db, type):
+def gen_valid_id(db):
     def gen_id():
         _id = ''
         for i in range(4):
@@ -14,7 +14,8 @@ def gen_valid_id(db, type):
         return _id
 
     id = gen_id()
-    while db.keys('{0}_*_{1}'.format(type, id)):
+    while db.keys('{0}_*_{1}'.format(PENDING, id)) or \
+        db.keys('{0}_*_{1}'.format(CHECKED, id)):
         id = gen_id()
 
     return id
@@ -48,7 +49,7 @@ def parse(key):
 class Database(redis.StrictRedis):
     def set(self, type, name, id=None, value=''):
         if not id:
-            id = utils.gen_valid_id(self, type)
+            id = utils.gen_valid_id(self)
         return super().set('{0}_{1}_{2}_'.format(type, name, id), value)
 
     def keys(self, type, name='*', id='*'):
