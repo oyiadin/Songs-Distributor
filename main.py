@@ -19,20 +19,20 @@ def subscribe_handler():
 @robot.text
 def text_handler(message):
     content_list = message.content.split()
-    command = content_list[0]
+    command = content_list[0].lower()
     args = content_list[1:] if len(content_list) >= 2 else []
 
-    if command == 'help' or command == '帮助':
+    if command in ('help', '帮助'):
         if args:
             return TOO_MANY_ARGS
         return HELP
 
-    elif command == 'about':
+    elif command in ('about', '关于'):
         if args:
             return TOO_MANY_ARGS
         return ABOUT
 
-    elif command == 'add':
+    elif command in ('add', '添加', '增加'):
         if len(args) < 1:
             return NEED_MORE_ARGS
         elif len(args) > 1:
@@ -44,7 +44,7 @@ def text_handler(message):
         db.set(PENDING, ' '.join(args))
         return ADDED
 
-    elif command == 'suadd' or command == 'sudel':
+    elif command in ('suadd', 'sudel'):
         if len(args) < 2:
             return NEED_MORE_ARGS
         elif len(args) > 2:
@@ -73,7 +73,7 @@ def text_handler(message):
                 url='{0}/{1}.mp3'.format(RESOURCE_URL, id),
                 hq_url='{0}/{1}_hq.mp3'.format(RESOURCE_URL, id))
 
-    elif command == 'list':
+    elif command in ('list', '歌曲列表', '列表'):
         if len(args) > 1:
             return TOO_MANY_ARGS
         
@@ -91,7 +91,7 @@ def text_handler(message):
         page = args[1] if len(args) == 2 else 1
         return gen_list_page(db, PENDING, page=page)
         
-    elif command == 'play':
+    elif command in ('play', '播放', '播放歌曲'):
         if len(args) < 1:
             return NEED_MORE_ARGS
         elif len(args) > 1:
