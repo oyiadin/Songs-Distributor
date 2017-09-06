@@ -26,7 +26,7 @@ def gen_list_page(db, type, page=1):
     right = left + 10
 
     all = db.keys(type)
-    max_page = (len(all)-1) / 10 + 1 if len(all) else 0
+    max_page = int((len(all)-1) / 10) + 1 if len(all) else 0
     if page > max_page:
         return PAGE_NOT_EXIST
     elif page < 1:
