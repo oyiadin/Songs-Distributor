@@ -32,7 +32,8 @@ def text_handler(message):
     # input argument with symbol [ ] or 【 】
     for (n, i) in enumerate(args):
         if (i.startswith('[') and i.endswith(']')) or \
-            (i.startswith('【') and i.endswith('】')):
+            (i.startswith('【') and i.endswith('】')) or \
+            (i.startswith('《') and i.endswith('》')):
             args[n] = i[1:-1]
     # input ID without beginnng with `play`
     if len(command) == 4 and command.isdigit():
@@ -42,11 +43,6 @@ def text_handler(message):
     if (not args) and db.keys(CHECKED, name=command, precise=True):
         args = [command]
         command = 'play'
-    # play a song with the name surrounded with 《 》
-    if command in CMD_PLAY:
-        for (n, i) in enumerate(args):
-            if i.startswith('《') and i.endswith('》'):
-                args[n] = i[1:-1]
 
 
     if command in CMD_HELP:
