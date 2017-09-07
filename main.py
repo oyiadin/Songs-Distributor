@@ -78,6 +78,27 @@ def text_handler(message):
                 url='{0}/{1}.mp3'.format(RESOURCE_URL, id),
                 hq_url='{0}/{1}_hq.mp3'.format(RESOURCE_URL, id))
 
+    elif command == 'sumv':
+        if len(args) < 3:
+            return NEED_MORE_ARGS
+        elif len(args) > 3:
+            return TOO_MANY_ARGS
+        if args[0] != PASSWORD:
+            return PASSWORD_INCORRECT
+        if len(args[1]) != 4:
+            return ID_INCORRECT
+
+        selected = db.keys(PENDING, id=args[1])
+        if not selected:
+            return NO_SONG
+        title, id = parse(selected[0])['name'], parse(selected[0])['id']
+        _format = '{0}_{1}_{2}_'
+        db.rename(
+            _format.format(PENDING, title, id),
+            _format.format(PENDING, args[2], id))
+
+        return RENAMED.format(id, args[2])
+
     elif command in ('list', '歌曲列表', '列表'):
         if len(args) > 1:
             return TOO_MANY_ARGS
