@@ -46,9 +46,9 @@ def text_handler(message):
     if (not args) and db.keys(CHECKED, name=command, precise=True):
         args = [command]
         command = 'play'
-    # to play a song but only input 《the name of song》
+    # to play a song but only input `《the name of song》` without `play`
     if (not args) and command.startswith('《') and command.endswith('》'):
-        args = [command]
+        args = [command[1:-1]]
         command = 'play'
 
 
