@@ -78,6 +78,8 @@ NO_SONG = '不好意思，我们没有找到这首歌，再检查一遍你输入
 
 TOO_MANY_SONGS = 'emm，请找出你想播放的歌曲所对应的ID，并输入 play 歌曲ID'
 
+MESSAGE_TOO_LONG = '你输入的内容好长啊~ 如果这是列在 help 里边的命令，我是不会理你的哟，哼~'
+
 SONG_DESCRIPTION = '由@二中旋律 所整理的二中宿区曲子 歌曲ID: {0}'
 
 SONG_SUADDED_DESCRIPTION = 'ID {0} 添加成功，请试听确认无误。'

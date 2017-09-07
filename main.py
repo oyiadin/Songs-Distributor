@@ -22,6 +22,9 @@ def text_handler(message):
     command = content_list[0].lower()
     args = content_list[1:] if len(content_list) >= 2 else []
 
+    if len(message.content > 1024):
+        return MESSAGE_TOO_LONG
+
     ##### wrong format handling #####
     # no space between command and argument
     for i in ALL_COMMANDS:
@@ -29,7 +32,7 @@ def text_handler(message):
             args.insert(0, command.replace(i, ''))
             command = i
             break
-    # input argument with symbol [ ] or 【 】
+    # input argument with symbol [ ] or 【 】 or 《 》
     for (n, i) in enumerate(args):
         if (i.startswith('[') and i.endswith(']')) or \
             (i.startswith('【') and i.endswith('】')) or \
@@ -41,6 +44,10 @@ def text_handler(message):
         command = 'play'
     # input song-name without beginning with `play`
     if (not args) and db.keys(CHECKED, name=command, precise=True):
+        args = [command]
+        command = 'play'
+    # to play a song but only input 《the name of song》
+    if (not args) and command.startswith('《') and command.endswith('》'):
         args = [command]
         command = 'play'
 
