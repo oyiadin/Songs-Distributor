@@ -52,6 +52,7 @@ class Database(redis.StrictRedis):
             id = utils.gen_valid_id(self)
         return super().set('{0}_{1}_{2}_'.format(type, name, id), value)
 
-    def keys(self, type, name='*', id='*'):
+    def keys(self, type, name='*', id='*', precise=False):
+        _format = '{0}_{1}_{2}_' if precise else '{0}_*{1}*_{2}_'
         return [i.decode('utf-8') \
-            for i in super().keys('{0}_*{1}*_{2}_'.format(type, name, id))]
+            for i in super().keys(_format.format(type, name, id))]

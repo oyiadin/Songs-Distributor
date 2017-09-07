@@ -22,22 +22,49 @@ def text_handler(message):
     command = content_list[0].lower()
     args = content_list[1:] if len(content_list) >= 2 else []
 
-    if command in ('help', '帮助'):
+    ##### wrong format handling #####
+    # no space between command and argument
+    for i in ALL_COMMANDS:
+        if command.startswith(i) and command != i:
+            args.insert(0, command.replace(i, ''))
+            command = i
+            break
+    # input argument with symbol [ ] or 【 】
+    for (n, i) in enumerate(args):
+        if (i.startswith('[') and i.endswith(']')) or \
+            (i.startswith('【') and i.endswith('】')):
+            args[n] = i[1:-1]
+    # input ID without beginnng with `play`
+    if len(command) == 4 and command.isdigit():
+        args.insert(0, command)
+        command = 'play'
+    # input song-name without beginning with `play`
+    if (not args) and db.keys(CHECKED, name=command, precise=True):
+        args = [command]
+        command = 'play'
+    # play a song with the name surrounded with 《 》
+    if command in CMD_PLAY:
+        for (n, i) in enumerate(args):
+            if i.startswith('《') and i.endswith('》'):
+                args[n] = i[1:-1]
+
+
+    if command in CMD_HELP:
         if args:
             return TOO_MANY_ARGS
         return HELP
 
-    elif command in ('about', '关于'):
+    elif command in CMD_ABOUT:
         if args:
             return TOO_MANY_ARGS
         return ABOUT
 
-    elif command == 'ping':
+    elif command == CMD_PING:
         if args:
             return TOO_MANY_ARGS
         return PING
 
-    elif command in ('add', '添加', '增加'):
+    elif command in CMD_ADD:
         if len(args) < 1:
             return NEED_MORE_ARGS
         elif len(args) > 1:
@@ -48,6 +75,38 @@ def text_handler(message):
 
         db.set(PENDING, ' '.join(args))
         return ADDED
+
+    elif command in CMD_LIST:
+        if len(args) > 1:
+            return TOO_MANY_ARGS
+        
+        page = args[0] if args else 1
+        return gen_list_page(db, CHECKED, page=page)
+
+    elif command in CMD_PLAY:
+        if len(args) < 1:
+            return NEED_MORE_ARGS
+        elif len(args) > 1:
+            return TOO_MANY_ARGS
+
+        if args[0].isdigit():
+            selected = db.keys(CHECKED, id=args[0])
+        else:
+            selected = db.keys(CHECKED, name=args[0])
+
+        if not selected:
+            return NO_SONG
+        elif len(selected) > 1:
+            return TOO_MANY_SONGS + '\n' + '\n'.join([
+                '{name} {id}'.format(**parse(i)) for i in selected])
+
+        title, id = parse(selected[0])['name'], parse(selected[0])['id']
+        return werobot.replies.MusicReply(
+            message=message,
+            title=title,
+            description=SONG_DESCRIPTION.format(id),
+            url='{0}/{1}.mp3'.format(RESOURCE_URL, id),
+            hq_url='{0}/{1}_hq.mp3'.format(RESOURCE_URL, id))
 
     elif command in ('suadd', 'sudel'):
         if len(args) < 2:
@@ -99,13 +158,6 @@ def text_handler(message):
 
         return RENAMED.format(id, args[2])
 
-    elif command in ('list', '歌曲列表', '列表'):
-        if len(args) > 1:
-            return TOO_MANY_ARGS
-        
-        page = args[0] if args else 1
-        return gen_list_page(db, CHECKED, page=page)
-
     elif command == 'sulist':
         if len(args) < 1:
             return NEED_MORE_ARGS
@@ -116,31 +168,6 @@ def text_handler(message):
 
         page = args[1] if len(args) == 2 else 1
         return gen_list_page(db, PENDING, page=page)
-        
-    elif command in ('play', '播放', '播放歌曲'):
-        if len(args) < 1:
-            return NEED_MORE_ARGS
-        elif len(args) > 1:
-            return TOO_MANY_ARGS
-
-        if args[0].isdigit():
-            selected = db.keys(CHECKED, id=args[0])
-        else:
-            selected = db.keys(CHECKED, name=args[0])
-
-        if not selected:
-            return NO_SONG
-        elif len(selected) > 1:
-            return TOO_MANY_SONGS + '\n' + '\n'.join([
-                '{name} {id}'.format(**parse(i)) for i in selected])
-
-        title, id = parse(selected[0])['name'], parse(selected[0])['id']
-        return werobot.replies.MusicReply(
-            message=message,
-            title=title,
-            description=SONG_DESCRIPTION.format(id),
-            url='{0}/{1}.mp3'.format(RESOURCE_URL, id),
-            hq_url='{0}/{1}_hq.mp3'.format(RESOURCE_URL, id))
 
 if __name__ == '__main__':
     robot.run()

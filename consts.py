@@ -1,3 +1,12 @@
+CMD_HELP = ('help', '帮助')
+CMD_ABOUT = ('about', '关于')
+CMD_PING = ('ping',)
+CMD_ADD = ('add', '添加', '增加')
+CMD_LIST = ('list', '歌曲列表', '列表')
+CMD_PLAY = ('play', '播放', '播放歌曲')
+
+ALL_COMMANDS = CMD_HELP + CMD_ABOUT + CMD_PING + CMD_ADD + CMD_LIST + CMD_PLAY
+
 PENDING = 'pending'
 CHECKED = 'checked'
 
