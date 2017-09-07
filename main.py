@@ -32,6 +32,11 @@ def text_handler(message):
             return TOO_MANY_ARGS
         return ABOUT
 
+    elif command == 'ping':
+        if args:
+            return TOO_MANY_ARGS
+        return PING
+
     elif command in ('add', '添加', '增加'):
         if len(args) < 1:
             return NEED_MORE_ARGS

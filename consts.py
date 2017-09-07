@@ -13,6 +13,7 @@ add [歌名]: 反馈新歌
 list [页数]: 查看现有歌单
 play [歌名]: 播放指定歌单
 about: 关于我们
+ping: 看看后台是否还活着=w=
 =====================
 * 命令里的方括号“[ ]”不用输入
 * 目前歌曲不多，我们正在努力完善曲库
@@ -43,6 +44,8 @@ ADDED = '''\
 
 DELETED = '歌曲《{0}》({1})已从待定列表删除。'
 
+PING = 'PONG!'
+
 NEED_MORE_ARGS = '参数不够。' + SHORT_HELP
 
 TOO_MANY_ARGS = '参数过多。' + SHORT_HELP
@@ -63,6 +66,6 @@ NO_SONG = '不好意思，我们没有找到这首歌，再检查一遍你输入
 
 TOO_MANY_SONGS = 'emm，请找出你想播放的歌曲所对应的ID，并输入 play 歌曲ID'
 
-SONG_DESCRIPTION = '由 @二中旋律 所整理的二中宿区曲子\n歌曲ID: {0}'
+SONG_DESCRIPTION = '由@二中旋律 所整理的二中宿区曲子 歌曲ID: {0}'
 
 SONG_SUADDED_DESCRIPTION = 'ID {0} 添加成功，请试听确认无误。'
