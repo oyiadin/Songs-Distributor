@@ -22,7 +22,7 @@ def text_handler(message):
     command = content_list[0].lower()
     args = content_list[1:] if len(content_list) >= 2 else []
 
-    if len(message.content > 1024):
+    if len(message.content) > 1024:
         return MESSAGE_TOO_LONG
 
     ##### wrong format handling #####
