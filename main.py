@@ -62,7 +62,7 @@ def text_handler(message):
             return TOO_MANY_ARGS
         return ABOUT
 
-    elif command == CMD_PING:
+    elif command in CMD_PING:
         if args:
             return TOO_MANY_ARGS
         return PING
