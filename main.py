@@ -105,7 +105,7 @@ def text_handler(message):
         if selected_p:
             for i in selected_p:
                 reply += ('\n' + '*{id} {name}'.format(**parse(i)))
-            reply += ('\n', SEARCH_TIP_FOR_PENDING)
+            reply += ('\n' + SEARCH_TIP_FOR_PENDING)
         return reply
 
     elif command in CMD_PLAY:
