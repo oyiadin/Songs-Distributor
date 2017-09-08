@@ -140,29 +140,33 @@ def text_handler(message):
     elif command in ('suadd', 'sudel'):
         if len(args) < 2:
             return NEED_MORE_ARGS
-        elif len(args) > 2:
-            return TOO_MANY_ARGS
         if args[0] != PASSWORD:
             return PASSWORD_INCORRECT
         if len(args[1]) != 4:
             return ID_INCORRECT
 
-        selected = db.keys(PENDING, id=args[1])
-        if not selected:
-            return ID_INCORRECT
-        title, id = parse(selected[0])['name'], parse(selected[0])['id']
+        reply = []
+        for i in args[1:]:
+            selected = db.keys(PENDING, id=i)
+            if not selected:
+                reply.append(ID_INCORRECT.format(i))
+            title, id = parse(selected[0])['name'], parse(selected[0])['id']
 
-        db.delete(selected[0])
+            db.delete(selected[0])
 
-        if command == 'sudel':
-            return DELETED.format(title, id)
-        elif command == 'suadd':
-            db.set(CHECKED, name=title, id=id)
-            return werobot.replies.MusicReply(
-                message=message,
-                title=title,
-                description=SONG_SUADDED_DESCRIPTION.format(id),
-                url='{0}/{1}.mp3'.format(RESOURCE_URL, id))
+            if command == 'sudel':
+                replay += SUDELETED.format(title, id)
+            elif command == 'suadd':
+                db.set(CHECKED, name=title, id=id)
+                if len(args) == 2:
+                    return werobot.replies.MusicReply(
+                        message=message,
+                        title=title,
+                        description=SONG_SUADDED_DESCRIPTION.format(id),
+                        url='{0}/{1}.mp3'.format(RESOURCE_URL, id))
+                else:
+                    reply.append(SUADDED.format(title, id))
+        return '\n'.join(reply)
 
     elif command == 'sumv':
         if len(args) < 3:
