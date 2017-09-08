@@ -4,8 +4,10 @@ CMD_PING = ('ping',)
 CMD_ADD = ('add', '添加', '增加')
 CMD_LIST = ('list', '歌曲列表', '列表')
 CMD_PLAY = ('play', '播放', '播放歌曲')
+CMD_SEARCH = ('ss', 'search', '搜索', '查找')
 
-ALL_COMMANDS = CMD_HELP + CMD_ABOUT + CMD_PING + CMD_ADD + CMD_LIST + CMD_PLAY
+ALL_COMMANDS = CMD_HELP + CMD_ABOUT + CMD_PING + CMD_ADD + CMD_LIST + \
+	CMD_PLAY + CMD_SEARCH
 
 PENDING = 'pending'
 CHECKED = 'checked'
@@ -17,10 +19,11 @@ SUBSCRIBE = '''\
 
 HELP = '''\
 =====================
-help: 回复本帮助信息
 add [歌名]: 反馈新歌
 list [页数]: 查看现有歌单
 play [歌名]: 播放指定歌单
+ss [歌名]: 查看是否已收录该曲
+help: 回复本帮助信息
 about: 关于我们
 ping: 看看后台是否还活着=w=
 =====================
@@ -57,6 +60,14 @@ DELETED = '歌曲《{0}》({1})已从待定列表删除。'
 RENAMED = '歌曲 {0} 已成功更名为《{1}》。'
 
 PING = 'PONG!'
+
+SEARCH_NO_SONG = '''\
+对不起，我们在曲库里没找到这首歌。
+你可以输入“add {0}”为我们反馈这首曲子。'''
+
+SEARCH_HEADER = '我们找到如下曲子:'
+
+SEARCH_TIP_FOR_PENDING = '注:标*号的曲子我们尚未收录其资源，请耐心等待0w0'
 
 NEED_MORE_ARGS = '参数不够。' + SHORT_HELP
 

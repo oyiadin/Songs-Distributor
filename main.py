@@ -88,6 +88,26 @@ def text_handler(message):
         page = args[0] if args else 1
         return gen_list_page(db, CHECKED, page=page)
 
+    elif command in CMD_SEARCH:
+        if len(args) < 1:
+            return NEED_MORE_ARGS
+        elif len(args) > 1:
+            return TOO_MANY_ARGS
+
+        selected_c = db.keys(CHECKED, args[0])
+        selected_p = db.keys(PENDING, args[0])
+        if not selected_c and not selected_p:
+            return SEARCH_NO_SONG.format(args[0])
+
+        reply = SEARCH_HEADER
+        for i in selected_c:
+            reply += ('\n' + '{id} {name}'.format(**parse(selected)))
+        if selected_p:
+            for i in selected_p:
+                reply += ('\n' + '*{id} {name}'.format(**parse(selected)))
+            reply += SEARCH_TIP_FOR_PENDING
+        return reply
+
     elif command in CMD_PLAY:
         if len(args) < 1:
             return NEED_MORE_ARGS
@@ -137,12 +157,12 @@ def text_handler(message):
             return DELETED.format(title, id)
         elif command == 'suadd':
             db.set(CHECKED, name=title, id=id)
-
             return werobot.replies.MusicReply(
                 message=message,
                 title=title,
                 description=SONG_SUADDED_DESCRIPTION.format(id),
                 url='{0}/{1}.mp3'.format(RESOURCE_URL, id))
+
     elif command == 'sumv':
         if len(args) < 3:
             return NEED_MORE_ARGS
