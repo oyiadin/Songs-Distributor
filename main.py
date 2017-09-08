@@ -74,8 +74,9 @@ def text_handler(message):
         elif len(args) > 1:
             return TOO_MANY_ARGS
         for i in args:
-            if '_' in i:
-                return INVALID_SYMBOL.format('_')
+            for s in ('_', '*'):
+                if s in i:
+                    return INVALID_SYMBOL.format(s)
 
         db.set(PENDING, ' '.join(args))
         return ADDED
@@ -98,19 +99,22 @@ def text_handler(message):
         else:
             selected = db.keys(CHECKED, name=args[0])
 
+        for i in ('_', '*'):
+            if i in args[0]:
+                return INVALID_SYMBOL.format(i)
+
         if not selected:
             return NO_SONG
         elif len(selected) > 1:
             return TOO_MANY_SONGS + '\n' + '\n'.join([
-                '{name} {id}'.format(**parse(i)) for i in selected])
+                '{id} {name}'.format(**parse(i)) for i in selected])
 
         title, id = parse(selected[0])['name'], parse(selected[0])['id']
         return werobot.replies.MusicReply(
             message=message,
             title=title,
             description=SONG_DESCRIPTION.format(id),
-            url='{0}/{1}.mp3'.format(RESOURCE_URL, id),
-            hq_url='{0}/{1}_hq.mp3'.format(RESOURCE_URL, id))
+            url='{0}/{1}.mp3'.format(RESOURCE_URL, id))
 
     elif command in ('suadd', 'sudel'):
         if len(args) < 2:
@@ -138,9 +142,7 @@ def text_handler(message):
                 message=message,
                 title=title,
                 description=SONG_SUADDED_DESCRIPTION.format(id),
-                url='{0}/{1}.mp3'.format(RESOURCE_URL, id),
-                hq_url='{0}/{1}_hq.mp3'.format(RESOURCE_URL, id))
-
+                url='{0}/{1}.mp3'.format(RESOURCE_URL, id))
     elif command == 'sumv':
         if len(args) < 3:
             return NEED_MORE_ARGS
