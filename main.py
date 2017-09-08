@@ -101,10 +101,10 @@ def text_handler(message):
 
         reply = SEARCH_HEADER
         for i in selected_c:
-            reply += ('\n' + '{id} {name}'.format(**parse(selected)))
+            reply += ('\n' + '{id} {name}'.format(**parse(i)))
         if selected_p:
             for i in selected_p:
-                reply += ('\n' + '*{id} {name}'.format(**parse(selected)))
+                reply += ('\n' + '*{id} {name}'.format(**parse(i)))
             reply += SEARCH_TIP_FOR_PENDING
         return reply
 
