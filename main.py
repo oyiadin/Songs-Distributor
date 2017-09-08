@@ -39,7 +39,8 @@ def text_handler(message):
             (i.startswith('《') and i.endswith('》')):
             args[n] = i[1:-1]
     # input ID without beginnng with `play`
-    if len(command) == 4 and command.isdigit():
+    if len(command) == 4 and command.isdigit() and \
+        db.keys(CHECKED, name=command, precise=True):
         args.insert(0, command)
         command = 'play'
     # input song-name without beginning with `play`
