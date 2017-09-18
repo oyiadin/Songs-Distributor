@@ -14,7 +14,7 @@ def gen_valid_id(collection):
         return _id
 
     id = gen_id()
-    while collection.find_one({'id': id})
+    while collection.find_one({'id': id}):
         id = gen_id()
 
     return id
