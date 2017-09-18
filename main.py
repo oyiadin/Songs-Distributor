@@ -78,7 +78,7 @@ def text_handler(message):
                 return INVALID_SYMBOL.format(i)
 
         collection.insert_one({
-            'id': gen_valid_id(),
+            'id': gen_valid_id(collection),
             'index': arg.lower(),
             'title': arg,
             'status': 'pending'})
