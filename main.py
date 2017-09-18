@@ -1,5 +1,5 @@
 import werobot
-import redis
+from pymongo import MongoClient
 from utils import *
 from consts import *
 from config import *
