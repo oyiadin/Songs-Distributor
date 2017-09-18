@@ -15,7 +15,7 @@ collection = db['collection']
 
 
 def compile(middle=''):
-    return re.compile(".*?{0}.*?".format(middle))
+    return re.compile(".*?{0}.*?".format(middle), re.IGNORECASE)
 
 
 @robot.subscribe
@@ -49,7 +49,7 @@ def text_handler(message):
         args.insert(0, command)
         command = 'play'
     # input song-name without beginning with `play`
-    if collection.find_one({'index': compile(middle=message.content.lower())}):
+    if collection.find_one({'title': compile(middle=message.content)}):
         args = [' '.join(command, *args)]
         command = 'play'
 
@@ -80,7 +80,7 @@ def text_handler(message):
 
         collection.insert_one({
             'id': gen_valid_id(collection),
-            'index': compile(middle=arg.lower()),
+            'title': compile(arg),
             'title': arg,
             'status': 'pending'})
         return ADDED
@@ -98,9 +98,9 @@ def text_handler(message):
         arg = ' '.join(args)
 
         selected_c = collection.find({
-            'index': compile(arg), 'status': 'checked'})
+            'title': compile(arg), 'status': 'checked'})
         selected_p = collection.find({
-            'index': compile(arg), 'status': 'pending'})
+            'title': compile(arg), 'status': 'pending'})
         if not selected_c and not selected_p:
             return SEARCH_NO_SONG.format(arg)
 
@@ -122,7 +122,7 @@ def text_handler(message):
             selected = collection.find({'id': arg, 'status': 'checked'})
         else:
             selected = collection.find({
-                'index': compile(arg), 'status': 'checked'})
+                'title': compile(arg), 'status': 'checked'})
 
         for i in ('_', '*'):
             if i in arg:
@@ -192,7 +192,7 @@ def text_handler(message):
             filter={'id': args[1], 'status': 'pending'},
             replacement={
                 'id': args[1],
-                'index': middle(args[2].lower()),
+                'title': middle(args[2]),
                 'title': args[2],
                 'status': 'pending'})
 
