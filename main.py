@@ -101,7 +101,7 @@ def text_handler(message):
             'title': compile(arg), 'status': 'checked'})
         selected_p = collection.find({
             'title': compile(arg), 'status': 'pending'})
-        if not selected_c and not selected_p:
+        if not selected_c.count() and not selected_p.count():
             return SEARCH_NO_SONG.format(arg)
 
         reply = SEARCH_HEADER
@@ -128,17 +128,18 @@ def text_handler(message):
             if i in arg:
                 return INVALID_SYMBOL.format(i)
 
-        if not selected:
+        if not selected.count():
             return NO_SONG
         elif selected.count() > 1:
             return TOO_MANY_SONGS + '\n' + '\n'.join([
                 '{id} {title}'.format(**i) for i in selected])
 
+        selected = selected.next()
         return werobot.replies.MusicReply(
             message=message,
-            title=selected[0]['title'],
-            description=SONG_DESCRIPTION.format(selected[0]['id']),
-            url='{0}/{1}.mp3'.format(RESOURCE_URL, selected[0]['id']))
+            title=selected['title'],
+            description=SONG_DESCRIPTION.format(selected['id']),
+            url='{0}/{1}.mp3'.format(RESOURCE_URL, selected['id']))
 
     elif command in ('suadd', 'sudel'):
         if len(args) < 2:
@@ -152,7 +153,7 @@ def text_handler(message):
         invalids = []
         for i in args[1:]:
             selected = collection.find_one({'id': i, 'status': 'pending'})
-            if not selected:
+            if not selected.count():
                 invalids.append(ID_INCORRECT.format(i))
             else:
                 title, id = selected['title'], selected['id']
@@ -185,7 +186,7 @@ def text_handler(message):
             args = [args[0], args[1], ' '.join(args[2:])]
 
         selected = collection.find_one({'id': args[1], 'status': 'pending'})
-        if not selected:
+        if not selected.count():
             return NO_SONG
         title, id = selected['title'], selected['id']
         collection.replaceOne(
