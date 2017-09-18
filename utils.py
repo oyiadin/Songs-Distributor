@@ -26,7 +26,7 @@ def gen_list_page(collection, status, page=1):
     right = left + 15
 
     all = collection.find({'status': status})
-    max_page = int((len(all)-1) / 15) + 1 if len(all) else 0
+    max_page = int((all.count()-1) / 15) + 1 if all.count() else 0
     if page > max_page:
         return PAGE_NOT_EXIST
     elif page < 1:
