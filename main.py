@@ -8,7 +8,9 @@ from config import *
 robot = werobot.WeRoBot(token=TOKEN)
 robot.config.update(HOST=HOST, PORT=PORT, SESSION_STORAGE=False)
 
-db = Database()
+client = MongoClient()
+db = client['SongsDistributor']
+collection = db['collection']
 
 
 @robot.subscribe
@@ -19,9 +21,7 @@ def subscribe_handler():
 @robot.text
 def text_handler(message):
     content_list = message.content.split()
-    command = content_list[0].lower()
     args = content_list[1:] if len(content_list) >= 2 else []
-    args = [i.lower() for i in args]
 
     if len(message.content) > 1024:
         return MESSAGE_TOO_LONG
@@ -33,24 +33,22 @@ def text_handler(message):
             args.insert(0, command.replace(i, ''))
             command = i
             break
-    # input argument with symbol [ ] or 【 】 or 《 》
+    # input argument with symbol [ ] or 【 】 or 《 》 or “ ”
     for (n, i) in enumerate(args):
-        if (i.startswith('[') and i.endswith(']')) or \
-            (i.startswith('【') and i.endswith('】')) or \
-            (i.startswith('《') and i.endswith('》')):
-            args[n] = i[1:-1]
+        for s in '[]【】《》“”':
+            args[n] = i.replace(s, '')
     # input ID without beginnng with `play`
     if len(command) == 4 and command.isdigit() and \
-        db.keys(CHECKED, name=command, precise=True):
+        collection.find_one({"id": command}):
         args.insert(0, command)
         command = 'play'
     # input song-name without beginning with `play`
-    if (not args) and db.keys(CHECKED, name=command, precise=True):
-        args = [command]
+    if collection.find_one({'index': message.content.lower()}):
+        args = [message.content.lower()]
         command = 'play'
     # to play a song but only input `《the name of song》` without `play`
-    if (not args) and command.startswith('《') and command.endswith('》'):
-        args = [command[1:-1]]
+    if message.content.startswith('《') and message.content.endswith('》'):
+        args = [message.content[1:-1].lower()]
         command = 'play'
 
 
@@ -72,14 +70,17 @@ def text_handler(message):
     elif command in CMD_ADD:
         if len(args) < 1:
             return NEED_MORE_ARGS
-        elif len(args) > 1:
-            return TOO_MANY_ARGS
-        for i in args:
-            for s in ('_', '*'):
-                if s in i:
-                    return INVALID_SYMBOL.format(s)
+        arg = ' '.join(args)
 
-        db.set(PENDING, ' '.join(args))
+        for i in ('_', '*'):
+            if i in arg:
+                return INVALID_SYMBOL.format(i)
+
+        collection.insert_one({
+            'id': gen_valid_id(),
+            'index': arg.lower(),
+            'title': arg,
+            'status': 'pending'})
         return ADDED
 
     elif command in CMD_LIST:
@@ -87,55 +88,52 @@ def text_handler(message):
             return TOO_MANY_ARGS
         
         page = args[0] if args else 1
-        return gen_list_page(db, CHECKED, page=page)
+        return gen_list_page(collection, 'checked', page)
 
     elif command in CMD_SEARCH:
         if len(args) < 1:
             return NEED_MORE_ARGS
-        elif len(args) > 1:
-            return TOO_MANY_ARGS
+        arg = ' '.join(args)
 
-        selected_c = db.keys(CHECKED, args[0])
-        selected_p = db.keys(PENDING, args[0])
+        selected_c = collection.find({'index': arg, 'status': 'checked'})
+        selected_p = collection.find({'index': arg, 'status': 'pending'})
         if not selected_c and not selected_p:
-            return SEARCH_NO_SONG.format(args[0])
+            return SEARCH_NO_SONG.format(arg)
 
         reply = SEARCH_HEADER
         for i in selected_c:
-            reply += ('\n' + '{id} {name}'.format(**parse(i)))
+            reply += ('\n' + '{id} {title}'.format(**i))
         if selected_p:
             for i in selected_p:
-                reply += ('\n' + '*{id} {name}'.format(**parse(i)))
+                reply += ('\n' + '*{id} {title}'.format(**i))
             reply += ('\n' + SEARCH_TIP_FOR_PENDING)
         return reply
 
     elif command in CMD_PLAY:
         if len(args) < 1:
             return NEED_MORE_ARGS
-        elif len(args) > 1:
-            return TOO_MANY_ARGS
+        arg = ' '.join(args)
 
-        if args[0].isdigit():
-            selected = db.keys(CHECKED, id=args[0])
+        if arg.isdigit():
+            selected = collection.find({'id': arg, 'status': 'checked'})
         else:
-            selected = db.keys(CHECKED, name=args[0])
+            selected = collection.find({'title': arg, 'status': 'checked'})
 
         for i in ('_', '*'):
-            if i in args[0]:
+            if i in arg:
                 return INVALID_SYMBOL.format(i)
 
         if not selected:
             return NO_SONG
         elif len(selected) > 1:
             return TOO_MANY_SONGS + '\n' + '\n'.join([
-                '{id} {name}'.format(**parse(i)) for i in selected])
+                '{id} {title}'.format(**i) for i in selected])
 
-        title, id = parse(selected[0])['name'], parse(selected[0])['id']
         return werobot.replies.MusicReply(
             message=message,
-            title=title,
-            description=SONG_DESCRIPTION.format(id),
-            url='{0}/{1}.mp3'.format(RESOURCE_URL, id))
+            title=selected[0]['title'],
+            description=SONG_DESCRIPTION.format(selected[0]['id']),
+            url='{0}/{1}.mp3'.format(RESOURCE_URL, selected[0]['id']))
 
     elif command in ('suadd', 'sudel'):
         if len(args) < 2:
@@ -146,46 +144,52 @@ def text_handler(message):
             return ID_INCORRECT
 
         reply = []
+        invalids = []
         for i in args[1:]:
-            selected = db.keys(PENDING, id=i)
+            selected = collection.find_one({'id': i, 'status': 'pending'})
             if not selected:
-                reply.append(ID_INCORRECT.format(i))
-            title, id = parse(selected[0])['name'], parse(selected[0])['id']
+                invalids.append(ID_INCORRECT.format(selected['id']))
+            else:
+                title, id = selected['title'], selected['id']
 
-            db.delete(selected[0])
-
-            if command == 'sudel':
-                replay += SUDELETED.format(title, id)
-            elif command == 'suadd':
-                db.set(CHECKED, name=title, id=id)
-                if len(args) == 2:
-                    return werobot.replies.MusicReply(
-                        message=message,
-                        title=title,
-                        description=SONG_SUADDED_DESCRIPTION.format(id),
-                        url='{0}/{1}.mp3'.format(RESOURCE_URL, id))
-                else:
-                    reply.append(SUADDED.format(title, id))
-        return '\n'.join(reply)
+                if command == 'sudel':
+                    collection.remove({'id': id, 'status': 'pending'})
+                    reply.append(SUDELETED.format(title, id))
+                elif command == 'suadd':
+                    collection.updateOne(
+                        filter={'id': id, 'status': 'pending'},
+                        update={'$set': {'status': 'checked'}})
+                    if len(args) == 2:
+                        return werobot.replies.MusicReply(
+                            message=message,
+                            title=title,
+                            description=SONG_SUADDED_DESCRIPTION.format(id),
+                            url='{0}/{1}.mp3'.format(RESOURCE_URL, id))
+                    else:
+                        reply.append(SUADDED.format(title, id))
+        return '\n'.join(reply) + '\n' + '\n'.join(invalids)
 
     elif command == 'sumv':
         if len(args) < 3:
             return NEED_MORE_ARGS
-        elif len(args) > 3:
-            return TOO_MANY_ARGS
         if args[0] != PASSWORD:
             return PASSWORD_INCORRECT
         if len(args[1]) != 4:
             return ID_INCORRECT
+        if len(args) > 3:
+            args = [args[0], args[1], ' '.join(args[2:])]
 
-        selected = db.keys(PENDING, id=args[1])
+        selected = collection.find_one({'id': args[1], 'status': 'pending'})
         if not selected:
             return NO_SONG
-        title, id = parse(selected[0])['name'], parse(selected[0])['id']
-        _format = '{0}_{1}_{2}_'
-        db.rename(
-            _format.format(PENDING, title, id),
-            _format.format(PENDING, args[2], id))
+        title, id = selected['title'], selected['id']
+        collection.replaceOne(
+            filter={'id': args[1], 'status': 'pending'},
+            replacement={
+                'id': args[1],
+                'index': args[2].lower(),
+                'title': args[2],
+                'status': 'pending'})
 
         return RENAMED.format(id, args[2])
 
@@ -198,7 +202,8 @@ def text_handler(message):
             return PASSWORD_INCORRECT
 
         page = args[1] if len(args) == 2 else 1
-        return gen_list_page(db, PENDING, page=page)
+        return gen_list_page(collection, 'pending', page)
+
 
 if __name__ == '__main__':
     robot.run()
