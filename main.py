@@ -161,7 +161,7 @@ def text_handler(message):
                     collection.remove({'id': id, 'status': 'pending'})
                     reply.append(SUDELETED.format(title, id))
                 elif command == 'suadd':
-                    collection.updateOne(
+                    collection.update_one(
                         filter={'id': id, 'status': 'pending'},
                         update={'$set': {'status': 'checked'}})
                     if len(args) == 2:
