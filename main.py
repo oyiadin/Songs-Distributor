@@ -21,6 +21,7 @@ def subscribe_handler():
 @robot.text
 def text_handler(message):
     content_list = message.content.split()
+    command = content_list[0]
     args = content_list[1:] if len(content_list) >= 2 else []
 
     if len(message.content) > 1024:
