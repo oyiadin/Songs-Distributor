@@ -1,5 +1,6 @@
 import werobot
 import redis
+import logging
 from utils import *
 from consts import *
 from config import *
@@ -7,6 +8,8 @@ from config import *
 
 robot = werobot.WeRoBot(token=TOKEN)
 robot.config.update(HOST=HOST, PORT=PORT, SESSION_STORAGE=False)
+logging.basicConfig(filename="S-D.log")
+werobot.logger.enable_pretty_logging(logger=logging.getLogger('S-D'))
 
 db = Database()
 
