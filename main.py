@@ -37,7 +37,7 @@ def text_handler(message):
     # input argument with symbol [ ] or 【 】 or 《 》 or “ ”
     for (n, i) in enumerate(args):
         for s in '[]【】《》“”':
-            args[n] = i.replace(s, '')
+            args[n] = args[n].replace(s, '')
     # input ID without beginnng with `play`
     if len(command) == 4 and command.isdigit() and \
         collection.find_one({"id": command}):
