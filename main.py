@@ -107,7 +107,7 @@ def text_handler(message):
         reply = SEARCH_HEADER
         for i in selected_c:
             reply += ('\n' + '{id} {title}'.format(**i))
-        if selected_p:
+        if selected_p.count():
             for i in selected_p:
                 reply += ('\n' + '*{id} {title}'.format(**i))
             reply += ('\n' + SEARCH_TIP_FOR_PENDING)
@@ -130,7 +130,7 @@ def text_handler(message):
 
         if not selected:
             return NO_SONG
-        elif len(selected) > 1:
+        elif selected.count() > 1:
             return TOO_MANY_SONGS + '\n' + '\n'.join([
                 '{id} {title}'.format(**i) for i in selected])
 
@@ -153,7 +153,7 @@ def text_handler(message):
         for i in args[1:]:
             selected = collection.find_one({'id': i, 'status': 'pending'})
             if not selected:
-                invalids.append(ID_INCORRECT.format(selected['id']))
+                invalids.append(ID_INCORRECT.format(i))
             else:
                 title, id = selected['title'], selected['id']
 
