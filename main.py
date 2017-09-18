@@ -1,4 +1,5 @@
 import werobot
+import re
 from pymongo import MongoClient
 from utils import *
 from consts import *
@@ -11,6 +12,10 @@ robot.config.update(HOST=HOST, PORT=PORT, SESSION_STORAGE=False)
 client = MongoClient()
 db = client['SongsDistributor']
 collection = db['collection']
+
+
+def compile(middle=''):
+    return re.compile(".*?{0}.*?".format(middle))
 
 
 @robot.subscribe
@@ -44,7 +49,7 @@ def text_handler(message):
         args.insert(0, command)
         command = 'play'
     # input song-name without beginning with `play`
-    if collection.find_one({'index': message.content.lower()}):
+    if collection.find_one({'index': compile(middle=message.content.lower())}):
         args = [' '.join(command, *args)]
         command = 'play'
 
@@ -75,7 +80,7 @@ def text_handler(message):
 
         collection.insert_one({
             'id': gen_valid_id(collection),
-            'index': arg.lower(),
+            'index': compile(middle=arg.lower()),
             'title': arg,
             'status': 'pending'})
         return ADDED
@@ -92,8 +97,10 @@ def text_handler(message):
             return NEED_MORE_ARGS
         arg = ' '.join(args)
 
-        selected_c = collection.find({'index': arg, 'status': 'checked'})
-        selected_p = collection.find({'index': arg, 'status': 'pending'})
+        selected_c = collection.find({
+            'index': compile(arg), 'status': 'checked'})
+        selected_p = collection.find({
+            'index': compile(arg), 'status': 'pending'})
         if not selected_c and not selected_p:
             return SEARCH_NO_SONG.format(arg)
 
@@ -114,7 +121,8 @@ def text_handler(message):
         if arg.isdigit():
             selected = collection.find({'id': arg, 'status': 'checked'})
         else:
-            selected = collection.find({'title': arg, 'status': 'checked'})
+            selected = collection.find({
+                'index': compile(arg), 'status': 'checked'})
 
         for i in ('_', '*'):
             if i in arg:
@@ -184,7 +192,7 @@ def text_handler(message):
             filter={'id': args[1], 'status': 'pending'},
             replacement={
                 'id': args[1],
-                'index': args[2].lower(),
+                'index': middle(args[2].lower()),
                 'title': args[2],
                 'status': 'pending'})
 
