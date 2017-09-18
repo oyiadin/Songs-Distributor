@@ -45,7 +45,7 @@ def text_handler(message):
         command = 'play'
     # input song-name without beginning with `play`
     if collection.find_one({'index': message.content.lower()}):
-        args = [message.content.lower()]
+        args = [' '.join(command, *args)]
         command = 'play'
     # to play a song but only input `《the name of song》` without `play`
     if message.content.startswith('《') and message.content.endswith('》'):
