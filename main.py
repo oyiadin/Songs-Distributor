@@ -47,10 +47,6 @@ def text_handler(message):
     if collection.find_one({'index': message.content.lower()}):
         args = [' '.join(command, *args)]
         command = 'play'
-    # to play a song but only input `《the name of song》` without `play`
-    if message.content.startswith('《') and message.content.endswith('》'):
-        args = [message.content[1:-1].lower()]
-        command = 'play'
 
 
     if command in CMD_HELP:
