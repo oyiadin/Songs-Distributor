@@ -199,7 +199,7 @@ def text_handler(message):
         if not selected:
             return NO_SONG
         title, id = selected['title'], selected['id']
-        collection.replaceOne(
+        collection.replace_one(
             filter={'id': args[1], 'status': 'pending'},
             replacement={'id': args[1], 'title': args[2]})
 
