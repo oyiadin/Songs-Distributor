@@ -1,4 +1,4 @@
-CMD_HELP = ('help', '帮助'， '帮助信息')
+CMD_HELP = ('help', '帮助', '帮助信息')
 CMD_ABOUT = ('about', '关于', '你是谁', '你们是谁')
 CMD_PING = ('ping', '活着没', '活着吗')
 CMD_ADD = ('add', '添加', '增加', '新增', '反馈')
