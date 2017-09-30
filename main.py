@@ -159,27 +159,30 @@ def text_handler(message):
         reply = []
         invalids = []
         for i in args[1:]:
-            selected = collection.find_one({'id': i, 'status': 'pending'})
+            selected = collection.find_one({'id': i})
             if not selected:
                 invalids.append(ID_INCORRECT.format(i))
             else:
                 title, id = selected['title'], selected['id']
 
                 if command == 'sudel':
-                    collection.remove({'id': id, 'status': 'pending'})
+                    collection.remove({'id': id})
                     reply.append(SUDELETED.format(title, id))
                 elif command == 'suadd':
-                    collection.update_one(
-                        filter={'id': id, 'status': 'pending'},
-                        update={'$set': {'status': 'checked'}})
-                    if len(args) == 2:
-                        return werobot.replies.MusicReply(
-                            message=message,
-                            title=title,
-                            description=SONG_SUADDED_DESCRIPTION.format(id),
-                            url='{0}/{1}.mp3'.format(RESOURCE_URL, id))
+                    if selected['status'] == 'checked':
+                        invalids.append(ALREADY_ADDED.format(title, id))
                     else:
-                        reply.append(SUADDED.format(title, id))
+                        collection.update_one(
+                            filter={'id': id},
+                            update={'$set': {'status': 'checked'}})
+                        if len(args) == 2:
+                            return werobot.replies.MusicReply(
+                                message=message,
+                                title=title,
+                                description=SONG_SUADDED_DESCRIPTION.format(id),
+                                url='{0}/{1}.mp3'.format(RESOURCE_URL, id))
+                        else:
+                            reply.append(SUADDED.format(title, id))
         return '\n'.join(reply) + '\n' + '\n'.join(invalids)
 
     elif command == 'sumv':
