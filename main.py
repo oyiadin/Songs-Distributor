@@ -198,12 +198,12 @@ def text_handler(message):
         selected = collection.find_one({'id': args[1]})
         if not selected:
             return NO_SONG
-        title, id = selected['title'], selected['id']
+        title, id, status = selected['title'], selected['id'], selected['status']
         collection.replace_one(
-            filter={'id': args[1], 'status': 'pending'},
-            replacement={'id': args[1], 'title': args[2]})
+            filter={'id': args[1]},
+            replacement={'id': args[1], 'title': args[2], 'status': status})
 
-        return RENAMED.format(id, args[2])
+        return RENAMED.format(title, args[2])
 
     elif command == 'sulist':
         if len(args) < 1:
