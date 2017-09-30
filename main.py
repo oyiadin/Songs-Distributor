@@ -61,6 +61,11 @@ def text_handler(message):
             return TOO_MANY_ARGS
         return HELP
 
+    elif command == 'suhelp':
+        if args:
+            return TOO_MANY_ARGS
+        return SU_HELP
+
     elif command in CMD_ABOUT:
         if args:
             return TOO_MANY_ARGS
