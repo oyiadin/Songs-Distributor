@@ -155,7 +155,7 @@ def text_handler(message):
         invalids = []
         for i in args[1:]:
             selected = collection.find_one({'id': i, 'status': 'pending'})
-            if not selected.count():
+            if not selected:
                 invalids.append(ID_INCORRECT.format(i))
             else:
                 title, id = selected['title'], selected['id']
@@ -188,7 +188,7 @@ def text_handler(message):
             args = [args[0], args[1], ' '.join(args[2:])]
 
         selected = collection.find_one({'id': args[1], 'status': 'pending'})
-        if not selected.count():
+        if not selected:
             return NO_SONG
         title, id = selected['title'], selected['id']
         collection.replaceOne(
