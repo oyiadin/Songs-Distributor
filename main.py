@@ -16,7 +16,7 @@ collection = db['collection']
 
 def compile(middle='', precise=False):
     format = '.*?{0}.*?' if not precise else '{0}'
-    return re.compile("".format(middle), re.IGNORECASE)
+    return re.compile(format.format(middle), re.IGNORECASE)
 
 
 @robot.subscribe
