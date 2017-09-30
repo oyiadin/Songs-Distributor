@@ -62,7 +62,7 @@ def text_handler(message):
         return HELP
 
     elif command == 'suhelp':
-        if args:
+        if len(args) > 1:
             return TOO_MANY_ARGS
         return SU_HELP
 
@@ -192,13 +192,13 @@ def text_handler(message):
         if len(args) > 3:
             args = [args[0], args[1], ' '.join(args[2:])]
 
-        selected = collection.find_one({'id': args[1], 'status': 'pending'})
+        selected = collection.find_one({'id': args[1]})
         if not selected:
             return NO_SONG
         title, id = selected['title'], selected['id']
         collection.replaceOne(
             filter={'id': args[1], 'status': 'pending'},
-            replacement={'id': args[1], 'title': args[2], 'status': 'pending'})
+            replacement={'id': args[1], 'title': args[2]})
 
         return RENAMED.format(id, args[2])
 
