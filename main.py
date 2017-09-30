@@ -103,7 +103,7 @@ def text_handler(message):
             'title': compile(arg), 'status': 'checked'})
         selected_p = collection.find({
             'title': compile(arg), 'status': 'pending'})
-        if not selected_c and not selected_p:
+        if not selected_c.count() and not selected_p.count():
             return SEARCH_NO_SONG.format(arg)
 
         reply = SEARCH_HEADER
@@ -130,7 +130,7 @@ def text_handler(message):
             if i in arg:
                 return INVALID_SYMBOL.format(i)
 
-        if not selected:
+        if not selected.count():
             return NO_SONG
         elif selected.count() > 1:
             return TOO_MANY_SONGS + '\n' + '\n'.join([
@@ -155,7 +155,7 @@ def text_handler(message):
         invalids = []
         for i in args[1:]:
             selected = collection.find_one({'id': i, 'status': 'pending'})
-            if not selected:
+            if not selected.count():
                 invalids.append(ID_INCORRECT.format(i))
             else:
                 title, id = selected['title'], selected['id']
@@ -188,16 +188,12 @@ def text_handler(message):
             args = [args[0], args[1], ' '.join(args[2:])]
 
         selected = collection.find_one({'id': args[1], 'status': 'pending'})
-        if not selected:
+        if not selected.count():
             return NO_SONG
         title, id = selected['title'], selected['id']
         collection.replaceOne(
             filter={'id': args[1], 'status': 'pending'},
-            replacement={
-                'id': args[1],
-                'title': middle(args[2]),
-                'title': args[2],
-                'status': 'pending'})
+            replacement={'id': args[1], 'title': args[2], 'status': 'pending'})
 
         return RENAMED.format(id, args[2])
 
