@@ -100,4 +100,4 @@ SONG_DESCRIPTION = '由@二中旋律 所整理的二中宿区曲子{0}'
 
 SONG_SUADDED_DESCRIPTION = 'ID{0}添加成功，请试听确认无误。'
 
-LOG = '{0} {1} {2}: {3}'
+LOG = '{0} {1} {2}: {3}\n'
