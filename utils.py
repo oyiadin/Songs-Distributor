@@ -37,3 +37,11 @@ def gen_list_page(collection, status, page=1):
 
     return header + '\n'.join([
         '{id} {title}'.format(**i) for i in selected])
+
+def log(m):
+    with open('log', 'w+') as f:
+        if m.type == 'text': exp=m.content
+        elif m.type == 'image': exp=m.img
+        elif m.type == 'link': exp=';'.join([m.title, m.description, m.url])
+        else: exp=str(dict(m))
+        f.write(LOG.format(m.time, m.source, m.type, exp))
