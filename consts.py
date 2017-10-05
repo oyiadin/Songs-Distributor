@@ -5,9 +5,10 @@ CMD_ADD = ('add', '添加', '增加', '新增', '反馈')
 CMD_LIST = ('list', '歌曲列表', '列表')
 CMD_PLAY = ('play', '播放', '播放歌曲', '返回', '获取')
 CMD_SEARCH = ('ss', 'search', '搜索', '查找', '寻找', '查询')
+CMD_STAT = ('stat', '状态', '数据', '统计')
 
 ALL_COMMANDS = CMD_HELP + CMD_ABOUT + CMD_PING + CMD_ADD + CMD_LIST + \
-	CMD_PLAY + CMD_SEARCH
+	CMD_PLAY + CMD_SEARCH + CMD_STAT
 
 SUBSCRIBE = '''你好，感谢你的关注！这是一个私人管理的公众号，旨在分享饶平县第二中学\
 宿区的歌单。同时，我们随时欢迎大家为这个歌单添砖加瓦~'''
@@ -22,6 +23,7 @@ HELP = '''\
 查找 [歌名]: 查看歌曲ID
 帮助: 回复本帮助信息
 关于: 关于我们
+状态: 查询本平台数据统计信息
 =====================
 示例: 输入“播放《不要说话》”就可以播放这首歌曲了~'''
 
@@ -43,6 +45,12 @@ ABOUT = '''\
 橙小圆、淤青鸡、Gay Gay Way、Fish、瑞星、黄弟弟、草果
 # 该号后台基于 WeRoBot、MongoDB 等框架开发，源码见于：
 https://github.com/oyiadin/Songs-Distributor'''
+
+STAT = '''\
+平台自上次启动后已正常运行{0}天
+=====================
+{1}首曲子已收录
+{2}首曲子待审核'''
 
 ADDED = '''\
 感谢你的反馈 :)

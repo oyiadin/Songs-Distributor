@@ -1,5 +1,6 @@
 import werobot
 import re
+import time
 from pymongo import MongoClient
 from utils import *
 from consts import *
@@ -13,6 +14,7 @@ client = MongoClient()
 db = client['SongsDistributor']
 collection = db['collection']
 
+start_time = time.time()
 
 def compile(middle='', precise=False):
     format = '.*?{0}.*?' if not precise else '^{0}$'
@@ -147,6 +149,15 @@ def text_handler(message):
             title=selected['title'],
             description=SONG_DESCRIPTION.format(selected['id']),
             url='{0}/{1}.mp3'.format(RESOURCE_URL, selected['id']))
+
+    elif command in CMD_STAT:
+        if args:
+            return TOO_MANY_ARGS
+
+        return STAT.format(
+            (time.time() - start_time) / 60*60*24.,
+            collection.count({'status': 'checked'}),
+            collection.count({'status': 'pending'}))
 
     elif command in ('suadd', 'sudel'):
         if len(args) < 2:
