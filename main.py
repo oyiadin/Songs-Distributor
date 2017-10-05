@@ -157,7 +157,7 @@ def text_handler(message):
             return TOO_MANY_ARGS
 
         return STAT.format(
-            (time.time() - start_time) / (60*60*24.),
+            int(((time.time() - start_time) / (60*60*24.))*10)/10.,
             collection.count({'status': 'checked'}),
             collection.count({'status': 'pending'}))
 
