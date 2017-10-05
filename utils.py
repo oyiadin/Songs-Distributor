@@ -3,7 +3,7 @@ import utils
 from pymongo import MongoClient
 from consts import *
 
-__all__ = ['gen_valid_id', 'gen_list_page']
+__all__ = ['gen_valid_id', 'gen_list_page', 'log']
 
 
 def gen_valid_id(collection):
