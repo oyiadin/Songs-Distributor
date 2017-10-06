@@ -10,17 +10,20 @@ collection = MongoClient()['SongsDistributor']['collection']
 def index_page():
     checked = collection.find({'status': 'checked'})
     pending = collection.find({'status': 'pending'})
-    return template('index.tpl', checked=checked, pending=pending)
+    return template(
+        'index.tpl', checked=checked, pending=pending, res=RESOURCE_URL)
 
 @get('/song/<id>')
 def song_page(id):
     selected = collection.find_one({'id': id})
-    return template('song.tpl', song=selected)
+    return template('song.tpl', song=selected, res=RESOURCE_URL)
 
 @get('/add')
 def add_song():
     return template(
-        'song.tpl', song={'id': '', 'title': '', 'status': '', 'date': ''})
+        'song.tpl',
+        song={'id': '', 'title': '', 'status': '', 'date': ''},
+        res=RESOURCE_URL)
 
 @get('/del')
 def del_song():
@@ -49,7 +52,7 @@ def song_handler():
         return '''illegal input
         please go back checking your input and submit again'''
 
-    if collection.find({'id': get('_id')}):
+    if collection.find({'id': get('_id')}).count():
         id = get('_id')
         collection.update_one(
             {'id': get('_id')},
@@ -64,7 +67,7 @@ def song_handler():
             'title': get('title'),
             'status': get('status'),
             'date': get('date')})
-    redirect('/song/{0}'.format(id)
+    redirect('/song/{0}'.format(id))
 
 
 if __name__ == '__main__':
