@@ -1,5 +1,6 @@
 from bottle import get, post, redirect, request, run, template
 from pymongo import MongoClient
+from config import *
 
 collection = MongoClient()['SongsDistributor']['collection']
 
@@ -17,7 +18,9 @@ def song_page(id):
 
 @post('/post/song')
 def song_handler():
-	get = request.forms.get
+	get = request.forms.getunicode
+	if get('password') != PASSWORD:
+		return 'wrong password, get out!'
 	try:
 		if len(get('id')) != 4 or not get('id').isdigit(): raise Exception
 		if not get('title'): raise Exception
