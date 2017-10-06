@@ -22,8 +22,20 @@ def add_song():
     return template(
         'song.tpl', song={'id': '', 'title': '', 'status': '', 'date': ''})
 
-@get('/del'):
+@get('/del')
 def del_song():
+    return template('del.tpl')
+
+@post('/del')
+def do_del():
+    get = request.forms.getunicode
+    if get('password') != PASSWORD:
+        return 'wrong password, get out!'
+    selected = collection.find_one({'id': get('id'), 'date': get('date')})
+    if not selected:
+        return 'no result, check your id  & date and try again'
+    collection.remove({'id': get('id'), 'date': get('date')})
+    return 'OK. <a href="/">Bring me home</a>'
 
 @post('/post/song')
 def song_handler():
