@@ -8,8 +8,8 @@ collection = MongoClient()['SongsDistributor']['collection']
 
 @get('/')
 def index_page():
-    checked = collection.find({'status': 'checked'})
-    pending = collection.find({'status': 'pending'})
+    checked = collection.find({'status': 'checked'}).sort([('id', 1)])
+    pending = collection.find({'status': 'pending'}).sort([('id', 1)])
     return template(
         'index.tpl', checked=checked, pending=pending, res=RESOURCE_URL)
 
