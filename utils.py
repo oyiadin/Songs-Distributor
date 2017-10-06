@@ -46,7 +46,7 @@ def log(m):
         elif m.type == 'link': exp=';'.join([m.title, m.description, m.url])
         else: exp=str(dict(m))
         f.write(LOG.format(datetime.datetime.fromtimestamp(
-            time.time()).strftime('%Y-%m-%d %H-%M-%S'), m.source, m.type, exp))
+            time.time()).strftime('%Y-%m-%d %H:%M:%S'), m.source, m.type, exp))
 
 def add_key(key, value):
     from pymongo import MongoClient
