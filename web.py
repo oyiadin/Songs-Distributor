@@ -31,7 +31,7 @@ def song_handler():
 			'id': get('id'),
 			'title': get('title'),
 			'status': get('status'),
-			'date': get('date)')}})
+			'date': get('date')}})
 	redirect('/song/{0}'.format(get('id')))
 
 
