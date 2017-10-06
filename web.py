@@ -50,6 +50,7 @@ def song_handler():
         please go back checking your input and submit again'''
 
     if collection.find({'id': get('_id')}):
+        id = get('_id')
         collection.update_one(
             {'id': get('_id')},
             {'$set': {
@@ -57,12 +58,13 @@ def song_handler():
                 'status': get('status'),
                 'date': get('date')}})
     else:
+        id = gen_valid_id(collection)
         collection.insert_one({
-            'id': gen_valid_id(collection),
+            'id': id,
             'title': get('title'),
             'status': get('status'),
             'date': get('date')})
-    redirect('/song/{0}'.format(get('id')))
+    redirect('/song/{0}'.format(id)
 
 
 if __name__ == '__main__':
