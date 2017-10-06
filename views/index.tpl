@@ -22,7 +22,7 @@
     <li>
       <a href="/song/{{ i['id'] }}">{{ i['id'] }} / {{ i['title'] }}</a>
       &nbsp;&nbsp;
-      <a href="{{ res }}/{{ id }}.mp3">点我听歌</a>
+      <a href="{{ res }}/{{ i['id'] }}.mp3">点我听歌</a>
     </li>
     % end
   </ul>

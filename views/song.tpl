@@ -7,7 +7,7 @@
 </head>
 <body>
   <a href=''>Home</a>
-  <a href="{{ res }}/{{ id }}.mp3">点我听歌</a>
+  <a href="{{ res }}/{{ song['id'] }}.mp3">点我听歌</a>
   <hr />
   <form action="/post/song" method="POST" accept-charset="utf-8">
     <ul>
