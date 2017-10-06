@@ -1,6 +1,7 @@
 import werobot
 import re
 import time
+import datetime
 from pymongo import MongoClient
 from utils import *
 from consts import *
@@ -92,8 +93,9 @@ def text_handler(message):
         collection.insert_one({
             'id': gen_valid_id(collection),
             'title': compile(arg),
-            'title': arg,
-            'status': 'pending'})
+            'status': 'pending',
+            'date': datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d')
+        })
         return ADDED
 
     elif command in CMD_LIST:
@@ -149,7 +151,7 @@ def text_handler(message):
         return werobot.replies.MusicReply(
             message=message,
             title=selected['title'],
-            description=SONG_DESCRIPTION.format(selected['id']),
+            description=SONG_DESCRIPTION.format(selected['id'], selected['date']),
             url='{0}/{1}.mp3'.format(RESOURCE_URL, selected['id']))
 
     elif command in CMD_STAT:

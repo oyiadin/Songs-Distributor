@@ -96,7 +96,7 @@ TOO_MANY_SONGS = '''\
 
 MESSAGE_TOO_LONG = '你输入的内容好长啊~ 我是不会理你的哟，哼~'
 
-SONG_DESCRIPTION = '由@二中旋律 所整理的二中宿区曲子{0}'
+SONG_DESCRIPTION = '由@二中旋律所整理的二中宿区曲子，投稿于{1}，ID{0}'
 
 SONG_SUADDED_DESCRIPTION = 'ID{0}添加成功，请试听确认无误。'
 
