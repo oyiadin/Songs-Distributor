@@ -92,7 +92,7 @@ def text_handler(message):
 
         collection.insert_one({
             'id': gen_valid_id(collection),
-            'title': compile(arg),
+            'title': arg,
             'status': 'pending',
             'date': datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d')
         })
