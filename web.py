@@ -1,42 +1,57 @@
 from bottle import get, post, redirect, request, run, template
 from pymongo import MongoClient
 from config import *
+from utils import *
 
 collection = MongoClient()['SongsDistributor']['collection']
 
 
 @get('/')
 def index_page():
-	checked = collection.find({'status': 'checked'})
-	pending = collection.find({'status': 'pending'})
-	return template('index.tpl', checked=checked, pending=pending)
+    checked = collection.find({'status': 'checked'})
+    pending = collection.find({'status': 'pending'})
+    return template('index.tpl', checked=checked, pending=pending)
 
 @get('/song/<id>')
 def song_page(id):
-	selected = collection.find_one({'id': id})
-	return template('song.tpl', song=selected)
+    selected = collection.find_one({'id': id})
+    return template('song.tpl', song=selected)
+
+@get('/add')
+def add_song():
+    return template(
+        'song.tpl', song={'id': '', 'title': '', 'status': '', 'date': ''})
+
+@get('/del'):
+def del_song():
 
 @post('/post/song')
 def song_handler():
-	get = request.forms.getunicode
-	if get('password') != PASSWORD:
-		return 'wrong password, get out!'
-	try:
-		if len(get('id')) != 4 or not get('id').isdigit(): raise Exception
-		if not get('title'): raise Exception
-		if not get('status') in ('checked', 'pending'): raise Exception
-	except Exception:
-		return '''illegal input
-		please go back checking your input and submit again'''
-	collection.update_many(
-		{'id': get('_id')},
-		{'$set': {
-			'id': get('id'),
-			'title': get('title'),
-			'status': get('status'),
-			'date': get('date')}})
-	redirect('/song/{0}'.format(get('id')))
+    get = request.forms.getunicode
+    if get('password') != PASSWORD:
+        return 'wrong password, get out!'
+    try:
+        if not get('title') or not get('date'): raise Exception
+        if not get('status') in ('checked', 'pending'): raise Exception
+    except Exception:
+        return '''illegal input
+        please go back checking your input and submit again'''
+
+    if collection.find({'id': get('_id')}):
+        collection.update_one(
+            {'id': get('_id')},
+            {'$set': {
+                'title': get('title'),
+                'status': get('status'),
+                'date': get('date')}})
+    else:
+        collection.insert_one({
+            'id': gen_valid_id(collection),
+            'title': get('title'),
+            'status': get('status'),
+            'date': get('date')})
+    redirect('/song/{0}'.format(get('id')))
 
 
 if __name__ == '__main__':
-	run(host=input('host: '), port=int(input('port: ')))
+    run(host=input('host: '), port=int(input('port: ')))

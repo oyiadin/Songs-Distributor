@@ -2,13 +2,13 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>{{ song['title'] }}</title>
+  <title>{{ song['id'] }}/{{ song['title'] }}</title>
   <style>.hidden { display: none; }</style>
 </head>
 <body>
   <form action="/post/song" method="POST" accept-charset="utf-8">
     <ul>
-      % for i in ('id', 'title', 'status', 'date'):
+      % for i in ('title', 'status', 'date'):
       <li>{{ i }}: <input type="text" name="{{ i }}" value="{{ song[i] }}" /></li>
       % end
     </ul>
@@ -19,7 +19,7 @@
   <hr />
   <p>一些小说明：</p>
   <p>status 只能填 checked 或者 pending，有啥区别你们应该懂。</p>
-  <p>id, title, status, date 都是可以修改的，不过不能胡乱修改（比如 id 必须是四个数字）。</p>
+  <p>title, status, date 都是可以修改的，不过不要胡乱修改。</p>
   <p>
 </body>
 </html>
