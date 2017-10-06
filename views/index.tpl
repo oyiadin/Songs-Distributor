@@ -10,19 +10,21 @@
   <hr/>
   <h1>Pending / {{ pending.count() }} Total</h1>
   <ul>
-  % for i in pending:
+    % for i in pending:
+    <li>
+      <a href="/song/{{ i['id'] }}">{{ i['id'] }} / {{ i['title'] }}</a>
+    </li>
+    % end
+  </ul>
+  <h1>Checked / {{ checked.count() }} Total</h1>
+  <ul>
+    % for i in checked:
     <li>
       <a href="/song/{{ i['id'] }}">{{ i['id'] }} / {{ i['title'] }}</a>
       &nbsp;&nbsp;
       <a href="{{ res }}/{{ id }}.mp3">点我听歌</a>
     </li>
-  % end
-  </ul>
-  <h1>Checked / {{ checked.count() }} Total</h1>
-  <ul>
-  % for i in checked:
-    <li><a href="/song/{{ i['id'] }}">{{ i['id'] }} / {{ i['title'] }}</a></li>
-  % end
+    % end
   </ul>
 </body>
 </html>
