@@ -21,8 +21,8 @@ def song_handler():
 	try:
 		if len(get('id')) != 4 or not get('id').isdigit(): raise Exception
 		if not get('title'): raise Exception
-		if not status in ('checked', 'pending'): raise Exception
-	except:
+		if not get('status') in ('checked', 'pending'): raise Exception
+	except Exception:
 		return '''illegal input
 		please go back checking your input and submit again'''
 	collection.update_many(
