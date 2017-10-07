@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <title>{{ song['id'] }}/{{ song['title'] }} ({{ song['comment'] }})</title>
   <style>.hidden { display: none; }</style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
 <body>
   <a href='/'>Home</a>
