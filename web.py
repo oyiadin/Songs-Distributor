@@ -22,7 +22,7 @@ def song_page(id):
 def add_song():
     return template(
         'song.tpl',
-        song={'id': '', 'title': '', 'status': '', 'date': ''},
+        song={'id': '', 'title': '', 'status': '', 'date': '', 'comment': ''},
         res=RESOURCE_URL)
 
 @get('/del')
@@ -59,14 +59,16 @@ def song_handler():
             {'$set': {
                 'title': get('title'),
                 'status': get('status'),
-                'date': get('date')}})
+                'date': get('date'),
+                'comment': get('comment')}})
     else:
         id = gen_valid_id(collection)
         collection.insert_one({
             'id': id,
             'title': get('title'),
             'status': get('status'),
-            'date': get('date')})
+            'date': get('date'),
+            'comment': get('comment')})
     redirect('/song/{0}'.format(id))
 
 

@@ -12,7 +12,9 @@
   <ul>
     % for i in pending:
     <li>
-      <a href="/song/{{ i['id'] }}">{{ i['id'] }} / {{ i['title'] }}</a>
+      <a href="/song/{{ i['id'] }}">
+        {{ i['id'] }} / {{ i['title'] }} ({{ i['comment'] }})
+      </a>
     </li>
     % end
   </ul>
@@ -20,7 +22,9 @@
   <ul>
     % for i in checked:
     <li>
-      <a href="/song/{{ i['id'] }}">{{ i['id'] }} / {{ i['title'] }}</a>
+      <a href="/song/{{ i['id'] }}">
+        {{ i['id'] }} / {{ i['title'] }} ({{ i['comment'] }})
+      </a>
       &nbsp;&nbsp;
       <a href="{{ res }}/{{ i['id'] }}.mp3">点我听歌</a>
     </li>

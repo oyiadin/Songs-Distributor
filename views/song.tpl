@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>{{ song['id'] }}/{{ song['title'] }}</title>
+  <title>{{ song['id'] }}/{{ song['title'] }} ({{ i['comment'] }})</title>
   <style>.hidden { display: none; }</style>
 </head>
 <body>
@@ -11,7 +11,7 @@
   <hr />
   <form action="/post/song" method="POST" accept-charset="utf-8">
     <ul>
-      % for i in ('title', 'status', 'date'):
+      % for i in ('title', 'comment', 'status', 'date'):
       <li>{{ i }}: <input type="text" name="{{ i }}" value="{{ song[i] }}" /></li>
       % end
     </ul>
@@ -22,7 +22,7 @@
   <hr />
   <p>一些小说明：</p>
   <p>status 只能填 checked 或者 pending，有啥区别你们应该懂。</p>
-  <p>title, status, date 都是可以修改的，不过不要胡乱修改。</p>
-  <p>
+  <p>title, comment, status, date 都是可以修改的，不过不要胡乱修改。</p>
+  <p>comment 可以填一些补充信息，比如填上歌手</p>
 </body>
 </html>
