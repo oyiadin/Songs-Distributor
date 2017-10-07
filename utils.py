@@ -25,8 +25,7 @@ def gen_list_page(collection, status, page=1):
     left = (page - 1) * 15
     right = left + 15
 
-    all = collection.find(
-        {'status': status}, {'id': 1, 'title': 1}).sort([('id', 1)])
+    all = collection.find({'status': status}).sort([('id', 1)])
     max_page = int((all.count()-1) / 15) + 1 if all.count() else 0
     if page > max_page:
         return PAGE_NOT_EXIST
@@ -37,7 +36,7 @@ def gen_list_page(collection, status, page=1):
     selected = all[left:right]
 
     return header + '\n'.join([
-        '{id} {title}'.format(**i) for i in selected])
+        '{id} {title} ({comment})'.format(**i) for i in selected])
 
 def log(m):
     with open('log', 'a') as f:
