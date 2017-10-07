@@ -71,4 +71,4 @@ def song_handler():
 
 
 if __name__ == '__main__':
-    run(host=input('host: '), port=int(input('port: ')))
+    run(host=HOST_WEB, port=PORT_WEB)

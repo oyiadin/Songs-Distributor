@@ -6,6 +6,9 @@ from pymongo import MongoClient
 from utils import *
 from consts import *
 from config import *
+import tornado.ioloop
+import tornado.web
+from werobot.contrib.tornado import make_handler
 
 
 robot = werobot.WeRoBot(token=TOKEN)
@@ -233,4 +236,8 @@ def text_handler(message):
 
 
 if __name__ == '__main__':
-    robot.run()
+    application = tornado.web.Application([
+        (r"/", make_handler(robot)),
+    ])
+    application.listen(PORT)
+    tornado.ioloop.IOLoop.instance().start()
