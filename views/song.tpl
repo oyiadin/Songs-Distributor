@@ -6,14 +6,18 @@
   <style>.hidden { display: none; }</style>
 </head>
 <body>
-  <a href=''>Home</a>
+  <a href='/'>Home</a>
   <a href="{{ res }}/{{ song['id'] }}.mp3">点我听歌</a>
   <hr />
   <form action="/post/song" method="POST" accept-charset="utf-8">
     <ul>
-      % for i in ('title', 'comment', 'status', 'date'):
+      % for i in ('title', 'comment', 'date'):
       <li>{{ i }}: <input type="text" name="{{ i }}" value="{{ song[i] }}" /></li>
       % end
+      <li>status:
+        <input type="radio" name="status" value="pending" {{'checked' if song['status']=='pending' else ''}} />pending
+        <input type="radio" name="status" value="checked" {{'checked' if song['status']=='checked' else ''}} />checked
+      </li>
     </ul>
     密码：<input type="text" name="password" />
     <input class="hidden" type="text" name="_id" value="{{ song['id'] }}" />
