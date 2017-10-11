@@ -13,6 +13,13 @@ def index_page():
     return template(
         'index.tpl', checked=checked, pending=pending, res=RESOURCE_URL)
 
+@get('/log')
+def log_page():
+	f = open('../log')
+	log = f.read()
+	f.close()
+	return '<pre>{}</pre>'.format(log)
+
 @get('/song/<id>')
 def song_page(id):
     selected = collection.find_one({'id': id})

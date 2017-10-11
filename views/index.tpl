@@ -8,6 +8,7 @@
 <body>
   <a href="/add">添加新曲子</a>
   <a href="/del">删除曲子</a>
+  <a href="/log">查看所有接收到的消息</a>
   <hr/>
   <h1>Pending / {{ pending.count() }} Total</h1>
   <ul>
