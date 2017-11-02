@@ -24,11 +24,17 @@
   <ul>
     % for i in checked:
     <li>
+      % if not i['comment']:
+      <b><i>
+      % end
       <a href="/song/{{ i['id'] }}">
         {{ i['id'] }} / {{ i['title'] }} ({{ i['comment'] }})
       </a>
       &nbsp;&nbsp;
       <a href="{{ res }}/{{ i['id'] }}.mp3">点我听歌</a>
+      % if not i['comment']:
+      </b></i>
+      % end
     </li>
     % end
   </ul>
