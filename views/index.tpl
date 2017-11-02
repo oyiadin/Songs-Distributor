@@ -7,7 +7,7 @@
   <style>
     body{font-size:0.8em;}
     ul{line-height:1.8em;}
-    .empathized{color:white !important;background-color:#08A;font-weight:bold;}
+    .empathized{background-color:#5AD;font-weight:bold;}
   </style>
 </head>
 <body>
@@ -29,7 +29,7 @@
   <ul>
     % for i in checked:
     <li
-      % if i['comment']:
+      % if not i['comment']:
       class="empathized"
       % end
     >
