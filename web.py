@@ -13,6 +13,13 @@ def index_page():
     return template(
         'index.tpl', checked=checked, pending=pending, res=RESOURCE_URL)
 
+@get('/txt')
+def txt_page():
+    checked = collection.find({'status': 'checked'}).sort([('id', 1)])
+    pending = collection.find({'status': 'pending'}).sort([('id', 1)])
+    return template(
+        'txt.tpl', checked=checked, pending=pending)
+
 @get('/log')
 def log_page():
 	f = open('../log')
